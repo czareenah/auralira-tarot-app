@@ -38,6 +38,15 @@ add it in the Ports panel. If the preview is stale, restart with
 `npm run web -- --clear`, then reload the forwarded page. Port forwarding is
 explained in [GitHub's documentation](https://docs.github.com/en/codespaces/developing-in-a-codespace/forwarding-ports-in-your-codespace).
 
+If Codespaces opens in **recovery mode**, its normal development container did not
+start. Node, npm, and npx may be unavailable in the recovery container. Use
+**Cmd/Ctrl+Shift+P → Codespaces: View Creation Log** to find the first failure.
+The dev container uses the published `24-bookworm` Node image. After pulling any
+container configuration fix, use **Codespaces: Rebuild Container** from the same
+command palette. Wait for the rebuild and automatic `npm ci` to finish, open a
+new terminal, then run `node --version`, `npm --version`, and `npm run web`.
+The web command is `npm run web`; `npx run web` is a different command.
+
 The Codespaces configuration is committed here; GitHub remains the source of truth.
 Commit and push your changes before deleting a Codespace.
 
@@ -129,7 +138,9 @@ No user data is saved by the welcome screen.
 
 Run `npm run validate` before committing. The initial test renders the welcome
 screen and checks its accessible Auralira heading and introductory text. GitHub
-Actions repeats the validation on Linux/Node 24 for branch pushes and PRs. The
+Actions repeats the validation on Linux/Node 24 for branch pushes and PRs. It also
+starts the exact image configured in the dev container and checks that Node and
+npm are available, catching invalid image tags before they reach Codespaces. The
 production export checks Router and web bundling as well as static rendering.
 
 Also open the web preview at narrow and wide widths, check that text remains

@@ -28,6 +28,10 @@ jobs:
         with:
           node-version-file: .nvmrc
           cache: npm
+      - name: Check Codespaces container starts with Node and npm
+        run: |
+          devcontainer_image=$(node -p 'JSON.parse(require("node:fs").readFileSync(".devcontainer/devcontainer.json", "utf8")).image')
+          docker run --rm --entrypoint sh "$devcontainer_image" -c 'node --version && npm --version'
       - run: npm ci
       - name: TypeScript, tests, Expo compatibility, and web export
         run: npm run validate
