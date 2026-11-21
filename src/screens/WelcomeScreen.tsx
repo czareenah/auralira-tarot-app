@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { AccessibilityInfo, Image, StyleSheet, Text, View } from 'react-native';
+import { AccessibilityInfo, Image, Pressable, StyleSheet, Text, View } from 'react-native';
 import { useVideoPlayer, VideoView } from 'expo-video';
 
 import { Screen } from '@/components/Screen';
@@ -8,6 +8,7 @@ import { typography } from '@/theme/typography';
 
 export function WelcomeScreen() {
   const [reduceMotion, setReduceMotion] = useState(false);
+  const [hasTappedBegin, setHasTappedBegin] = useState(false);
   const player = useVideoPlayer(
     require('../../assets/welcome/auralira-welcome-loop-portrait.mp4'),
     videoPlayer => {
@@ -70,6 +71,7 @@ export function WelcomeScreen() {
             resizeMode="contain"
             style={styles.logo}
           />
+          <Text style={styles.brandName}>Auralira</Text>
           <View accessible={false} style={styles.rule} />
           <Text style={styles.tagline}>
             Take what resonates. Leave what doesn’t. Make space for what comes next.
@@ -78,7 +80,22 @@ export function WelcomeScreen() {
             A quiet moment. An open mind. Your own intuition.
           </Text>
         </View>
-        <Text style={styles.footer}>TRUST THE WISDOM WITHIN</Text>
+        <View style={styles.footerGroup}>
+          <Pressable
+            accessibilityRole="button"
+            accessibilityHint="Opens the tarot reading experience"
+            onPress={() => setHasTappedBegin(true)}
+            style={({ pressed }) => [styles.beginButton, pressed && styles.beginPressed]}
+          >
+            <Text style={styles.beginText}>Tap to Begin</Text>
+          </Pressable>
+          {hasTappedBegin && (
+            <Text accessibilityLiveRegion="polite" style={styles.beginHint}>
+              Your reading awaits.
+            </Text>
+          )}
+          <Text style={styles.footer}>TRUST THE WISDOM WITHIN</Text>
+        </View>
       </Screen>
     </View>
   );
@@ -119,7 +136,14 @@ const styles = StyleSheet.create({
   logo: {
     width: 160,
     height: 160,
-    marginBottom: spacing.md,
+  },
+  brandName: {
+    color: colors.gold,
+    fontFamily: typography.display,
+    fontSize: 25,
+    letterSpacing: 2,
+    marginTop: spacing.xs,
+    textAlign: 'center',
   },
   rule: {
     width: 48,
@@ -142,6 +166,26 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginTop: spacing.sm,
     maxWidth: 280,
+  },
+  footerGroup: { alignItems: 'center' },
+  beginButton: {
+    minHeight: 44,
+    justifyContent: 'center',
+    paddingHorizontal: spacing.md,
+    marginBottom: spacing.sm,
+  },
+  beginPressed: { opacity: 0.65 },
+  beginText: {
+    color: colors.ivory,
+    fontFamily: typography.body,
+    fontSize: 15,
+    letterSpacing: 1,
+  },
+  beginHint: {
+    color: colors.ivory,
+    fontFamily: typography.body,
+    fontSize: 12,
+    marginBottom: spacing.sm,
   },
   footer: {
     color: colors.gold,
