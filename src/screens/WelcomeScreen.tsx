@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react';
 import { AccessibilityInfo, Image, StyleSheet, Text, View } from 'react-native';
 import { useVideoPlayer, VideoView } from 'expo-video';
 
-import { BrandWordmark } from '@/components/BrandWordmark';
 import { Screen } from '@/components/Screen';
 import { colors, spacing } from '@/theme/tokens';
 import { typography } from '@/theme/typography';
@@ -65,15 +64,21 @@ export function WelcomeScreen() {
       <Screen>
         <Text style={styles.eyebrow}>TAROT & REFLECTION</Text>
         <View style={styles.welcome}>
-          <Text style={styles.introduction}>WELCOME TO</Text>
-          <BrandWordmark />
+          <Image
+            source={require('../../assets/brand/auralira-seal-gold-512.png')}
+            accessibilityLabel="Auralira celestial tarot seal"
+            resizeMode="contain"
+            style={styles.logo}
+          />
           <View accessible={false} style={styles.rule} />
-          <Text style={styles.tagline}>Make space for what comes next.</Text>
+          <Text style={styles.tagline}>
+            Take what resonates. Leave what doesn’t. Make space for what comes next.
+          </Text>
           <Text style={styles.description}>
             A quiet moment. An open mind. Your own intuition.
           </Text>
         </View>
-        <Text style={styles.footer}>PAUSE. BREATHE. BE HERE.</Text>
+        <Text style={styles.footer}>TRUST THE WISDOM WITHIN</Text>
       </Screen>
     </View>
   );
@@ -111,12 +116,10 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     paddingVertical: spacing.xxl,
   },
-  introduction: {
-    color: colors.gold,
-    fontFamily: typography.body,
-    fontSize: 10,
-    letterSpacing: 3,
-    marginBottom: spacing.sm,
+  logo: {
+    width: 160,
+    height: 160,
+    marginBottom: spacing.md,
   },
   rule: {
     width: 48,

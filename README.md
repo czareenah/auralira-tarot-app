@@ -87,7 +87,9 @@ Web checks do not prove behavior on a physical iPhone or Android device.
 src/
   app/                 Expo Router routes; _layout.tsx configures the root stack
   screens/             Screen content; WelcomeScreen is the only implemented screen
-assets/welcome/        Supplied looping welcome background video and poster image
+assets/
+  brand/               Supplied gold Auralira seal
+  welcome/             Supplied looping background video and poster image
   components/          Reusable Screen container and temporary BrandWordmark
   tarot/
     types.ts           Card metadata types, with no deck or draw logic
