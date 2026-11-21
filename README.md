@@ -4,8 +4,11 @@ A premium, gesture-driven tarot application for iOS, Android, and web. The initi
 setup contains only a welcome screen in the **Midnight Celestial** palette:
 midnight navy `#101827`, antique gold `#C7A66D`, and ivory `#F1E8D7`.
 
-The logo is a temporary text wordmark. Tarot sessions, deck contents, gestures,
-card animations, jumper cards, and persistence behavior are future work.
+The welcome screen uses a muted, infinitely looping celestial video background
+with its supplied poster image as the still frame and loading fallback. Devices
+with reduced motion enabled show the poster without playing video. The logo is a
+temporary text wordmark. Tarot sessions, deck contents, gestures, card animations,
+jumper cards, and persistence behavior are future work.
 
 ## Preview in GitHub Codespaces
 
@@ -84,6 +87,7 @@ Web checks do not prove behavior on a physical iPhone or Android device.
 src/
   app/                 Expo Router routes; _layout.tsx configures the root stack
   screens/             Screen content; WelcomeScreen is the only implemented screen
+assets/welcome/        Supplied looping welcome background video and poster image
   components/          Reusable Screen container and temporary BrandWordmark
   tarot/
     types.ts           Card metadata types, with no deck or draw logic
@@ -130,8 +134,10 @@ external state library is needed now. Gestures and animations must not become th
 source of truth for card ownership. Add tests for each rule as it is implemented.
 Persistence should validate restored data and recover from missing/corrupt storage.
 
-The root already mounts Gesture Handler and safe-area providers and imports
-Reanimated. AsyncStorage is installed but unused until the persistence feature.
+The welcome screen's background video is bundled locally, muted, and looped with
+Expo Video; it pauses when the user enables reduced motion. The root already mounts
+Gesture Handler and safe-area providers and imports Reanimated. AsyncStorage is
+installed but unused until the persistence feature.
 No user data is saved by the welcome screen.
 
 ## Testing and review
