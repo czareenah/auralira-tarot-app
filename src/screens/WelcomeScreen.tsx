@@ -43,10 +43,10 @@ export function WelcomeScreen() {
             <Text style={styles.brandName}>AURALIRA</Text>
             <View accessible={false} style={styles.rule} />
             <Text style={styles.tagline}>
-              Take what resonates. Leave what doesn’t. Make space for what comes next.
+              Make space for what's next.
             </Text>
             <Text style={styles.description}>
-              A quiet moment. An open mind. Your own intuition.
+              A quiet moment. An open mind. Your own intuition. Take what resonates, leave what does not.
             </Text>
           </View>
           <View style={styles.footerGroup}>
