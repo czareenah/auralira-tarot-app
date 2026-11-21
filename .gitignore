@@ -1,0 +1,35 @@
+# Dependencies and generated output
+node_modules/
+.expo/
+dist/
+web-build/
+coverage/
+expo-env.d.ts
+*.tsbuildinfo
+.metro-health-check*
+
+# Generated native projects (configure through app.json)
+/ios/
+/android/
+.kotlin/
+
+# Local environment and credentials
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p8
+*.p12
+*.jks
+*.keystore
+*.mobileprovision
+.npmrc
+
+# Logs and editor/OS files
+*.log
+.DS_Store
+.idea/
+.vscode/*
+!.vscode/extensions.json
+*.orig
