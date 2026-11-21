@@ -1,125 +1,73 @@
-import { useEffect, useState } from 'react';
-import { AccessibilityInfo, Image, Pressable, StyleSheet, Text, View } from 'react-native';
-import { useVideoPlayer, VideoView } from 'expo-video';
+import { useEffect, useRef, useState } from 'react';
+import { useRouter, type Href } from 'expo-router';
+import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
 
+import { CelestialBackground } from '@/components/CelestialBackground';
 import { Screen } from '@/components/Screen';
 import { colors, spacing } from '@/theme/tokens';
 import { typography } from '@/theme/typography';
 
 export function WelcomeScreen() {
-  const [reduceMotion, setReduceMotion] = useState(false);
-  const [hasTappedBegin, setHasTappedBegin] = useState(false);
-  const player = useVideoPlayer(
-    require('../../assets/welcome/auralira-welcome-loop-portrait.mp4'),
-    videoPlayer => {
-      videoPlayer.loop = true;
-      videoPlayer.muted = true;
-      videoPlayer.play();
-    },
-  );
+  const router = useRouter();
+  const [isBeginning, setIsBeginning] = useState(false);
+  const transitionTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
-    let isActive = true;
-    AccessibilityInfo.isReduceMotionEnabled().then(enabled => {
-      if (isActive) setReduceMotion(enabled);
-    });
-
-    const subscription = AccessibilityInfo.addEventListener(
-      'reduceMotionChanged',
-      setReduceMotion,
-    );
-
     return () => {
-      isActive = false;
-      subscription.remove();
+      if (transitionTimer.current) clearTimeout(transitionTimer.current);
     };
   }, []);
 
-  useEffect(() => {
-    if (reduceMotion) {
-      player.pause();
-      return;
-    }
-    player.play();
-  }, [player, reduceMotion]);
+  const beginReading = () => {
+    if (transitionTimer.current) return;
+    setIsBeginning(true);
+    transitionTimer.current = setTimeout(() => {
+      router.replace('/cards' as Href);
+      transitionTimer.current = null;
+    }, 3000);
+  };
 
   return (
     <View style={styles.container}>
-      <Image
-        source={require('../../assets/welcome/auralira-welcome-poster.png')}
-        resizeMode="cover"
-        accessible={false}
-        style={styles.background}
-      />
-      {!reduceMotion && (
-        <VideoView
-          player={player}
-          style={styles.background}
-          contentFit="cover"
-          nativeControls={false}
-          allowsPictureInPicture={false}
-          accessible={false}
-        />
-      )}
-      <View pointerEvents="none" style={styles.scrim} />
-      <Screen>
-        <Text style={styles.eyebrow}>TAROT & REFLECTION</Text>
-        <View style={styles.welcome}>
-          <Image
-            source={require('../../assets/brand/auralira-seal-gold-512.png')}
-            accessibilityLabel="Auralira celestial tarot seal"
-            resizeMode="contain"
-            style={styles.logo}
-          />
-          <Text style={styles.brandName}>AURALIRA</Text>
-          <View accessible={false} style={styles.rule} />
-          <Text style={styles.tagline}>
-            Take what resonates. Leave what doesn’t. Make space for what comes next.
-          </Text>
-          <Text style={styles.description}>
-            A quiet moment. An open mind. Your own intuition.
-          </Text>
-        </View>
-        <View style={styles.footerGroup}>
-          <Pressable
-            accessibilityRole="button"
-            accessibilityHint="Opens the tarot reading experience"
-            onPress={() => setHasTappedBegin(true)}
-            style={({ pressed }) => [styles.beginButton, pressed && styles.beginPressed]}
-          >
-            <Text style={styles.beginText}>TAP TO BEGIN</Text>
-          </Pressable>
-          {hasTappedBegin && (
-            <Text accessibilityLiveRegion="polite" style={styles.beginHint}>
-              Your reading awaits.
+      <CelestialBackground />
+      {!isBeginning && (
+        <Screen>
+          <Text style={styles.eyebrow}>TAROT & REFLECTION</Text>
+          <View style={styles.welcome}>
+            <Image
+              source={require('../../assets/brand/auralira-seal-gold-512.png')}
+              accessibilityLabel="Auralira celestial tarot seal"
+              resizeMode="contain"
+              style={styles.logo}
+            />
+            <Text style={styles.brandName}>AURALIRA</Text>
+            <View accessible={false} style={styles.rule} />
+            <Text style={styles.tagline}>
+              Take what resonates. Leave what doesn’t. Make space for what comes next.
             </Text>
-          )}
-          <Text style={styles.footer}>TRUST THE WISDOM WITHIN</Text>
-        </View>
-      </Screen>
+            <Text style={styles.description}>
+              A quiet moment. An open mind. Your own intuition.
+            </Text>
+          </View>
+          <View style={styles.footerGroup}>
+            <Pressable
+              accessibilityRole="button"
+              accessibilityHint="Begins your reading after a brief pause"
+              onPress={beginReading}
+              style={({ pressed }) => [styles.beginButton, pressed && styles.beginPressed]}
+            >
+              <Text style={styles.beginText}>TAP TO BEGIN</Text>
+            </Pressable>
+            <Text style={styles.footer}>TRUST THE WISDOM WITHIN</Text>
+          </View>
+        </Screen>
+      )}
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: colors.midnight },
-  background: {
-    position: 'absolute',
-    top: 0,
-    right: 0,
-    bottom: 0,
-    left: 0,
-    width: '100%',
-    height: '100%',
-  },
-  scrim: {
-    position: 'absolute',
-    top: 0,
-    right: 0,
-    bottom: 0,
-    left: 0,
-    backgroundColor: 'rgba(16, 24, 39, 0.28)',
-  },
   eyebrow: {
     color: colors.gold,
     fontFamily: typography.body,
@@ -180,12 +128,6 @@ const styles = StyleSheet.create({
     fontFamily: typography.body,
     fontSize: 15,
     letterSpacing: 1,
-  },
-  beginHint: {
-    color: colors.ivory,
-    fontFamily: typography.body,
-    fontSize: 12,
-    marginBottom: spacing.sm,
   },
   footer: {
     color: colors.gold,
