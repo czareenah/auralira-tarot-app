@@ -1,103 +1,73 @@
-import { useEffect, useState } from 'react';
-import { AccessibilityInfo, Image, StyleSheet, Text, View } from 'react-native';
-import { useVideoPlayer, VideoView } from 'expo-video';
+import { useEffect, useRef, useState } from 'react';
+import { useRouter, type Href } from 'expo-router';
+import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
 
-import { BrandWordmark } from '@/components/BrandWordmark';
+import { CelestialBackground } from '@/components/CelestialBackground';
 import { Screen } from '@/components/Screen';
 import { colors, spacing } from '@/theme/tokens';
 import { typography } from '@/theme/typography';
 
 export function WelcomeScreen() {
-  const [reduceMotion, setReduceMotion] = useState(false);
-  const player = useVideoPlayer(
-    require('../../assets/welcome/auralira-welcome-loop-portrait.mp4'),
-    videoPlayer => {
-      videoPlayer.loop = true;
-      videoPlayer.muted = true;
-      videoPlayer.play();
-    },
-  );
+  const router = useRouter();
+  const [isBeginning, setIsBeginning] = useState(false);
+  const transitionTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
-    let isActive = true;
-    AccessibilityInfo.isReduceMotionEnabled().then(enabled => {
-      if (isActive) setReduceMotion(enabled);
-    });
-
-    const subscription = AccessibilityInfo.addEventListener(
-      'reduceMotionChanged',
-      setReduceMotion,
-    );
-
     return () => {
-      isActive = false;
-      subscription.remove();
+      if (transitionTimer.current) clearTimeout(transitionTimer.current);
     };
   }, []);
 
-  useEffect(() => {
-    if (reduceMotion) {
-      player.pause();
-      return;
-    }
-    player.play();
-  }, [player, reduceMotion]);
+  const beginReading = () => {
+    if (transitionTimer.current) return;
+    setIsBeginning(true);
+    transitionTimer.current = setTimeout(() => {
+      router.replace('/cards' as Href);
+      transitionTimer.current = null;
+    }, 3000);
+  };
 
   return (
     <View style={styles.container}>
-      <Image
-        source={require('../../assets/welcome/auralira-welcome-poster.png')}
-        resizeMode="cover"
-        accessible={false}
-        style={styles.background}
-      />
-      {!reduceMotion && (
-        <VideoView
-          player={player}
-          style={styles.background}
-          contentFit="cover"
-          nativeControls={false}
-          allowsPictureInPicture={false}
-          accessible={false}
-        />
+      <CelestialBackground />
+      {!isBeginning && (
+        <Screen>
+          <Text style={styles.eyebrow}>TAROT & REFLECTION</Text>
+          <View style={styles.welcome}>
+            <Image
+              source={require('../../assets/brand/auralira-seal-gold-512.png')}
+              accessibilityLabel="Auralira celestial tarot seal"
+              resizeMode="contain"
+              style={styles.logo}
+            />
+            <Text style={styles.brandName}>AURALIRA</Text>
+            <View accessible={false} style={styles.rule} />
+            <Text style={styles.tagline}>
+              Make space for what's next.
+            </Text>
+            <Text style={styles.description}>
+              A quiet moment. An open mind. Your own intuition. Take what resonates, leave what does not.
+            </Text>
+          </View>
+          <View style={styles.footerGroup}>
+            <Pressable
+              accessibilityRole="button"
+              accessibilityHint="Begins your reading after a brief pause"
+              onPress={beginReading}
+              style={({ pressed }) => [styles.beginButton, pressed && styles.beginPressed]}
+            >
+              <Text style={styles.beginText}>TAP TO BEGIN</Text>
+            </Pressable>
+            <Text style={styles.footer}>TRUST THE WISDOM WITHIN</Text>
+          </View>
+        </Screen>
       )}
-      <View pointerEvents="none" style={styles.scrim} />
-      <Screen>
-        <Text style={styles.eyebrow}>TAROT & REFLECTION</Text>
-        <View style={styles.welcome}>
-          <Text style={styles.introduction}>WELCOME TO</Text>
-          <BrandWordmark />
-          <View accessible={false} style={styles.rule} />
-          <Text style={styles.tagline}>Make space for what comes next.</Text>
-          <Text style={styles.description}>
-            A quiet moment. An open mind. Your own intuition.
-          </Text>
-        </View>
-        <Text style={styles.footer}>PAUSE. BREATHE. BE HERE.</Text>
-      </Screen>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: colors.midnight },
-  background: {
-    position: 'absolute',
-    top: 0,
-    right: 0,
-    bottom: 0,
-    left: 0,
-    width: '100%',
-    height: '100%',
-  },
-  scrim: {
-    position: 'absolute',
-    top: 0,
-    right: 0,
-    bottom: 0,
-    left: 0,
-    backgroundColor: 'rgba(16, 24, 39, 0.28)',
-  },
   eyebrow: {
     color: colors.gold,
     fontFamily: typography.body,
@@ -111,12 +81,17 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     paddingVertical: spacing.xxl,
   },
-  introduction: {
+  logo: {
+    width: 160,
+    height: 160,
+  },
+  brandName: {
     color: colors.gold,
-    fontFamily: typography.body,
-    fontSize: 10,
-    letterSpacing: 3,
-    marginBottom: spacing.sm,
+    fontFamily: typography.display,
+    fontSize: 25,
+    letterSpacing: 2,
+    marginTop: spacing.xs,
+    textAlign: 'center',
   },
   rule: {
     width: 48,
@@ -139,6 +114,20 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginTop: spacing.sm,
     maxWidth: 280,
+  },
+  footerGroup: { alignItems: 'center' },
+  beginButton: {
+    minHeight: 44,
+    justifyContent: 'center',
+    paddingHorizontal: spacing.md,
+    marginBottom: spacing.sm,
+  },
+  beginPressed: { opacity: 0.65 },
+  beginText: {
+    color: colors.ivory,
+    fontFamily: typography.body,
+    fontSize: 15,
+    letterSpacing: 1,
   },
   footer: {
     color: colors.gold,
