@@ -71,7 +71,7 @@ export function WelcomeScreen() {
             resizeMode="contain"
             style={styles.logo}
           />
-          <Text style={styles.brandName}>Auralira</Text>
+          <Text style={styles.brandName}>AURALIRA</Text>
           <View accessible={false} style={styles.rule} />
           <Text style={styles.tagline}>
             Take what resonates. Leave what doesn’t. Make space for what comes next.
@@ -87,7 +87,7 @@ export function WelcomeScreen() {
             onPress={() => setHasTappedBegin(true)}
             style={({ pressed }) => [styles.beginButton, pressed && styles.beginPressed]}
           >
-            <Text style={styles.beginText}>Tap to Begin</Text>
+            <Text style={styles.beginText}>TAP TO BEGIN</Text>
           </Pressable>
           {hasTappedBegin && (
             <Text accessibilityLiveRegion="polite" style={styles.beginHint}>
